@@ -1,11 +1,11 @@
 /* script.js */
 const symbols = ['🔵', '🟢', '🟡', '🟣', '🔴', '💎', '⚡'];
-const gridSize = 6;
+const gridSize = 3;  // Menor grade para mais foco na jogabilidade
 let balance = 100.00;
 let freeSpins = 0;
 let betAmount = 10;
 let multiplier = 1;
-const freeSpinCost = 25;
+const freeSpinCost = 100;  // Rodadas grátis custam 100x o valor da aposta
 let dailyChallenge = { task: "Gire 10 vezes hoje", completed: 0, reward: "R$50,00" };
 let gameHistory = [];
 
@@ -32,7 +32,7 @@ function updateBet() {
 function spin() {
   const cells = document.querySelectorAll('.slot-cell');
   const results = [];
-  
+
   // Preencher a grade com símbolos aleatórios
   cells.forEach((cell, index) => {
     cell.classList.add('fall');
@@ -60,7 +60,7 @@ function checkWin(results) {
 
   // Verificar ganhos
   for (const [symbol, count] of Object.entries(symbolCount)) {
-    if (count >= 3) {
+    if (count >= 3 && Math.random() > 0.5) {  // Dificuldade de ganho (50% de chance)
       if (symbol === '⚡') {
         freeSpins += 1;
         document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
@@ -88,16 +88,25 @@ function applyMultiplier() {
   alert(`Multiplicador de aposta: ${multiplier}x`);
 }
 
+function spinFreeRounds() {
+  for (let i = 0; i < 10; i++) {
+    setTimeout(() => {
+      spin();
+    }, 1500 * i); // Gira 10 vezes seguidas com intervalo
+  }
+}
+
 document.getElementById('spin-btn').addEventListener('click', () => {
   if (balance >= betAmount || freeSpins > 0) {
     if (freeSpins > 0) {
       freeSpins -= 1;
       document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
+      spinFreeRounds();  // Gira automaticamente 10 vezes
     } else {
       applyMultiplier();
       balance -= betAmount;
+      spin();
     }
-    spin();
   } else {
     alert('Saldo insuficiente!');
   }
@@ -109,9 +118,9 @@ document.getElementById('bet-amount').addEventListener('input', (e) => {
 });
 
 document.getElementById('buy-free-spins').addEventListener('click', () => {
-  if (balance >= freeSpinCost) {
+  if (balance >= freeSpinCost * betAmount) {  // 100x a aposta
     freeSpins += 1;
-    balance -= freeSpinCost;
+    balance -= freeSpinCost * betAmount;  // Custa 100x a aposta
     updateBalance();
     document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
     alert('Você comprou uma rodada grátis!');
