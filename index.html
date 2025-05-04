@@ -21,10 +21,26 @@
       <button id="buy-free-spins">Comprar 1 rodada grátis</button>
       
       <p id="free-spins">Rodadas Grátis: 0</p>
+      
+      <button id="payout-table-btn">Tabela de Pagamento</button>
     </div>
   </div>
+  
+  <div id="payout-table" style="display: none;">
+    <h3>Tabela de Pagamento</h3>
+    <table>
+      <tr><th>Ícone</th><th>Prêmio</th></tr>
+      <tr><td>🔵</td><td>R$10</td></tr>
+      <tr><td>🟢</td><td>R$15</td></tr>
+      <tr><td>🟡</td><td>R$20</td></tr>
+      <tr><td>🟣</td><td>R$25</td></tr>
+      <tr><td>🔴</td><td>R$30</td></tr>
+      <tr><td>💎</td><td>R$50</td></tr>
+      <tr><td>⚡</td><td>Rodadas Grátis</td></tr>
+    </table>
+    <button onclick="document.getElementById('payout-table').style.display = 'none'">Fechar</button>
+  </div>
+  
   <script src="script.js"></script>
-  <audio id="win-sound" src="win.mp3"></audio>
-  <audio id="spin-sound" src="spin.mp3"></audio>
 </body>
 </html>
