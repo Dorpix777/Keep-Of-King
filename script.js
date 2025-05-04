@@ -1,19 +1,10 @@
 /* script.js */
-const symbols = ['🔵', '🟢', '🟡', '🟣', '🔴', '💎', '🍷', '⏳', '👑', '⚡'];
+const symbols = ['🔵', '🟢', '🟡', '🟣', '🔴', '💎', '⚡'];
 const gridSize = 6;
 let balance = 100.00;
 let freeSpins = 0;
 let betAmount = 10; // Valor inicial da aposta
 const freeSpinCost = 25; // Custo por rodada grátis
-
-const winSound = document.getElementById('win-sound');
-const spinSound = document.getElementById('spin-sound');
-
-// Atualizar o valor da aposta
-document.getElementById('bet-amount').addEventListener('input', (e) => {
-  betAmount = parseInt(e.target.value);
-  document.getElementById('bet-value').textContent = `Aposta: R$${betAmount},00`;
-});
 
 function createGrid() {
   const grid = document.getElementById('slot-grid');
@@ -25,28 +16,37 @@ function createGrid() {
   }
 }
 
-function playSound(sound) {
-  sound.currentTime = 0; // Rewind to start
-  sound.play();
+function updateBalance() {
+  document.getElementById('balance').textContent = `Saldo: R$${balance.toFixed(2)}`;
 }
+
+function updateBet() {
+  document.getElementById('bet-value').textContent = `Aposta: R$${betAmount},00`;
+}
+
+document.getElementById('bet-amount').addEventListener('input', (e) => {
+  betAmount = parseInt(e.target.value);
+  updateBet();
+});
 
 function spin() {
   const cells = document.querySelectorAll('.slot-cell');
   const results = [];
-  playSound(spinSound);
+  const grid = [];
 
-  // Animação de rotação
-  cells.forEach(cell => cell.classList.add('animate'));
+  // Animação de "tumble"
+  cells.forEach(cell => {
+    cell.classList.add('fall');
+    setTimeout(() => {
+      const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+      grid.push(randomSymbol);
+      cell.textContent = randomSymbol;
+      cell.classList.remove('fall');
+    }, 500); // Animação de queda de símbolos
+  });
 
   setTimeout(() => {
-    cells.forEach(cell => cell.classList.remove('animate'));
-
-    for (let i = 0; i < gridSize * gridSize; i++) {
-      const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-      results.push(randomSymbol);
-      cells[i].textContent = randomSymbol;
-    }
-    checkWin(results);
+    checkWin(grid);
   }, 1000);
 }
 
@@ -79,13 +79,12 @@ function checkWin(results) {
 
   if (winAmount > 0) {
     balance += winAmount;
-    playSound(winSound);
     alert(`Você ganhou R$${winAmount.toFixed(2)} com multiplicador ${multiplier}x!`);
   } else if (freeSpins === 0) {
     balance -= betAmount; // Deduz o valor da aposta
   }
 
-  document.getElementById('balance').textContent = `Saldo: R$${balance.toFixed(2)}`;
+  updateBalance();
 }
 
 document.getElementById('spin-btn').addEventListener('click', () => {
@@ -105,7 +104,7 @@ document.getElementById('buy-free-spins').addEventListener('click', () => {
   if (balance >= freeSpinCost) {
     freeSpins += 1;
     balance -= freeSpinCost;
-    document.getElementById('balance').textContent = `Saldo: R$${balance.toFixed(2)}`;
+    updateBalance();
     document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
     alert('Você comprou uma rodada grátis!');
   } else {
@@ -113,4 +112,11 @@ document.getElementById('buy-free-spins').addEventListener('click', () => {
   }
 });
 
+// Mostrar tabela de pagamento
+document.getElementById('payout-table-btn').addEventListener('click', () => {
+  document.getElementById('payout-table').style.display = 'block';
+});
+
 createGrid();
+updateBalance();
+updateBet();
