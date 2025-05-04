@@ -3,8 +3,11 @@ const symbols = ['🔵', '🟢', '🟡', '🟣', '🔴', '💎', '⚡'];
 const gridSize = 6;
 let balance = 100.00;
 let freeSpins = 0;
-let betAmount = 10; // Valor inicial da aposta
-const freeSpinCost = 25; // Custo por rodada grátis
+let betAmount = 10;
+let multiplier = 1;
+const freeSpinCost = 25;
+let dailyChallenge = { task: "Gire 10 vezes hoje", completed: 0, reward: "R$50,00" };
+let gameHistory = [];
 
 function createGrid() {
   const grid = document.getElementById('slot-grid');
@@ -24,17 +27,11 @@ function updateBet() {
   document.getElementById('bet-value').textContent = `Aposta: R$${betAmount},00`;
 }
 
-document.getElementById('bet-amount').addEventListener('input', (e) => {
-  betAmount = parseInt(e.target.value);
-  updateBet();
-});
-
 function spin() {
   const cells = document.querySelectorAll('.slot-cell');
   const results = [];
   const grid = [];
 
-  // Animação de "tumble"
   cells.forEach(cell => {
     cell.classList.add('fall');
     setTimeout(() => {
@@ -42,16 +39,13 @@ function spin() {
       grid.push(randomSymbol);
       cell.textContent = randomSymbol;
       cell.classList.remove('fall');
-    }, 500); // Animação de queda de símbolos
+    }, 500); 
   });
 
   setTimeout(() => {
     checkWin(grid);
+    checkDailyChallenge();
   }, 1000);
-}
-
-function getRandomMultiplier() {
-  return Math.floor(Math.random() * 500) + 2;
 }
 
 function checkWin(results) {
@@ -61,30 +55,34 @@ function checkWin(results) {
   });
 
   let winAmount = 0;
-  let multiplier = 1;
 
-  // Verificando se há multiplicadores ou rodadas grátis
   for (const [symbol, count] of Object.entries(symbolCount)) {
-    if (count >= 8) {
+    if (count >= 3) {
       if (symbol === '⚡') {
-        freeSpins += 1; // Adiciona rodadas grátis
+        freeSpins += 1;
         document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
         alert('Rodadas Grátis Ativadas!');
       } else {
-        multiplier = getRandomMultiplier();
-        winAmount += count * 10 * multiplier; // Exemplo de cálculo de ganho com multiplicador
+        winAmount += count * 10 * multiplier;
       }
     }
   }
 
   if (winAmount > 0) {
     balance += winAmount;
-    alert(`Você ganhou R$${winAmount.toFixed(2)} com multiplicador ${multiplier}x!`);
-  } else if (freeSpins === 0) {
-    balance -= betAmount; // Deduz o valor da aposta
+    alert(`Você ganhou R$${winAmount.toFixed(2)}!`);
+    gameHistory.push({ type: 'ganho', amount: winAmount });
+  } else {
+    balance -= betAmount;
+    gameHistory.push({ type: 'perda', amount: betAmount });
   }
 
   updateBalance();
+}
+
+function applyMultiplier() {
+  multiplier = Math.floor(Math.random() * 3) + 1;  // Aplica um multiplicador aleatório
+  alert(`Multiplicador de aposta: ${multiplier}x`);
 }
 
 document.getElementById('spin-btn').addEventListener('click', () => {
@@ -92,14 +90,21 @@ document.getElementById('spin-btn').addEventListener('click', () => {
     if (freeSpins > 0) {
       freeSpins -= 1;
       document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
+    } else {
+      applyMultiplier();
+      balance -= betAmount;
     }
     spin();
   } else {
-    alert('Saldo insuficiente para jogar!');
+    alert('Saldo insuficiente!');
   }
 });
 
-// Comprar rodadas grátis
+document.getElementById('bet-amount').addEventListener('input', (e) => {
+  betAmount = parseInt(e.target.value);
+  updateBet();
+});
+
 document.getElementById('buy-free-spins').addEventListener('click', () => {
   if (balance >= freeSpinCost) {
     freeSpins += 1;
@@ -112,10 +117,22 @@ document.getElementById('buy-free-spins').addEventListener('click', () => {
   }
 });
 
-// Mostrar tabela de pagamento
 document.getElementById('payout-table-btn').addEventListener('click', () => {
   document.getElementById('payout-table').style.display = 'block';
 });
+
+function checkDailyChallenge() {
+  dailyChallenge.completed++;
+  if (dailyChallenge.completed >= 10) {
+    alert(`Desafio concluído! Você ganhou ${dailyChallenge.reward}`);
+    balance += 50;
+    updateBalance();
+  }
+}
+
+function closeChallenge() {
+  document.getElementById('challenge-modal').style.display = 'none';
+}
 
 createGrid();
 updateBalance();
