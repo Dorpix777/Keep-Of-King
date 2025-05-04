@@ -22,6 +22,7 @@ body {
   grid-template-columns: repeat(6, 1fr);
   grid-gap: 10px;
   margin-bottom: 20px;
+  transition: all 1s ease-in-out;
 }
 
 .slot-cell {
@@ -35,6 +36,18 @@ body {
   font-size: 24px;
   font-weight: bold;
   color: #333;
+  transition: all 0.5s ease-in-out;
+}
+
+.slot-cell.animate {
+  transform: scale(1.2);
+  animation: rotate-animation 1s ease-in-out;
+}
+
+@keyframes rotate-animation {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg); }
+  100% { transform: rotate(360deg); }
 }
 
 #controls {
