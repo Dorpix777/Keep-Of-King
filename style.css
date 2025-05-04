@@ -22,7 +22,6 @@ body {
   grid-template-columns: repeat(6, 1fr);
   grid-gap: 10px;
   margin-bottom: 20px;
-  transition: all 1s ease-in-out;
 }
 
 .slot-cell {
@@ -36,18 +35,6 @@ body {
   font-size: 24px;
   font-weight: bold;
   color: #333;
-  transition: all 0.5s ease-in-out;
-}
-
-.slot-cell.animate {
-  transform: scale(1.2);
-  animation: rotate-animation 1s ease-in-out;
-}
-
-@keyframes rotate-animation {
-  0% { transform: rotate(0deg); }
-  50% { transform: rotate(180deg); }
-  100% { transform: rotate(360deg); }
 }
 
 #controls {
@@ -64,8 +51,18 @@ body {
   font-size: 16px;
   cursor: pointer;
   border-radius: 5px;
+  margin-top: 10px;
 }
 
 #spin-btn:hover {
   background-color: #45a049;
+}
+
+input[type="range"] {
+  width: 200px;
+  margin: 10px;
+}
+
+button {
+  margin-top: 10px;
 }
