@@ -3,9 +3,17 @@ const symbols = ['🔵', '🟢', '🟡', '🟣', '🔴', '💎', '🍷', '⏳', 
 const gridSize = 6;
 let balance = 100.00;
 let freeSpins = 0;
+let betAmount = 10; // Valor inicial da aposta
+const freeSpinCost = 25; // Custo por rodada grátis
 
 const winSound = document.getElementById('win-sound');
 const spinSound = document.getElementById('spin-sound');
+
+// Atualizar o valor da aposta
+document.getElementById('bet-amount').addEventListener('input', (e) => {
+  betAmount = parseInt(e.target.value);
+  document.getElementById('bet-value').textContent = `Aposta: R$${betAmount},00`;
+});
 
 function createGrid() {
   const grid = document.getElementById('slot-grid');
@@ -26,7 +34,7 @@ function spin() {
   const cells = document.querySelectorAll('.slot-cell');
   const results = [];
   playSound(spinSound);
-  
+
   // Animação de rotação
   cells.forEach(cell => cell.classList.add('animate'));
 
@@ -74,14 +82,14 @@ function checkWin(results) {
     playSound(winSound);
     alert(`Você ganhou R$${winAmount.toFixed(2)} com multiplicador ${multiplier}x!`);
   } else if (freeSpins === 0) {
-    balance -= 10; // Custo por rodada
+    balance -= betAmount; // Deduz o valor da aposta
   }
 
   document.getElementById('balance').textContent = `Saldo: R$${balance.toFixed(2)}`;
 }
 
 document.getElementById('spin-btn').addEventListener('click', () => {
-  if (balance >= 10 || freeSpins > 0) {
+  if (balance >= betAmount || freeSpins > 0) {
     if (freeSpins > 0) {
       freeSpins -= 1;
       document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
@@ -89,6 +97,19 @@ document.getElementById('spin-btn').addEventListener('click', () => {
     spin();
   } else {
     alert('Saldo insuficiente para jogar!');
+  }
+});
+
+// Comprar rodadas grátis
+document.getElementById('buy-free-spins').addEventListener('click', () => {
+  if (balance >= freeSpinCost) {
+    freeSpins += 1;
+    balance -= freeSpinCost;
+    document.getElementById('balance').textContent = `Saldo: R$${balance.toFixed(2)}`;
+    document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
+    alert('Você comprou uma rodada grátis!');
+  } else {
+    alert('Saldo insuficiente para comprar rodadas grátis!');
   }
 });
 
