@@ -60,7 +60,7 @@ function checkWin(results) {
 
   // Verificar ganhos
   for (const [symbol, count] of Object.entries(symbolCount)) {
-    if (count >= 3 && Math.random() > 0.5) {  // Dificuldade de ganho (50% de chance)
+    if (count >= 3 && Math.random() > 0.2) {  // Dificuldade de ganho (50% de chance)
       if (symbol === '⚡') {
         freeSpins += 1;
         document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
