@@ -11,7 +11,9 @@ let gameHistory = [];
 
 function createGrid() {
   const grid = document.getElementById('slot-grid');
-  grid.innerHTML = '';
+  grid.innerHTML = ''; // Limpa a grade anterior
+
+  // Criar células da grade
   for (let i = 0; i < gridSize * gridSize; i++) {
     const cell = document.createElement('div');
     cell.classList.add('slot-cell');
@@ -30,22 +32,22 @@ function updateBet() {
 function spin() {
   const cells = document.querySelectorAll('.slot-cell');
   const results = [];
-  const grid = [];
-
-  cells.forEach(cell => {
+  
+  // Preencher a grade com símbolos aleatórios
+  cells.forEach((cell, index) => {
     cell.classList.add('fall');
     setTimeout(() => {
       const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-      grid.push(randomSymbol);
-      cell.textContent = randomSymbol;
+      cell.textContent = randomSymbol;  // Define o símbolo no slot
+      results.push(randomSymbol);
       cell.classList.remove('fall');
-    }, 500); 
+    }, 500 * index);  // Fazer a animação com atraso
   });
 
   setTimeout(() => {
-    checkWin(grid);
+    checkWin(results);  // Verifica os ganhos após a animação
     checkDailyChallenge();
-  }, 1000);
+  }, 1000);  // Aguarda 1 segundo para a animação terminar
 }
 
 function checkWin(results) {
@@ -56,6 +58,7 @@ function checkWin(results) {
 
   let winAmount = 0;
 
+  // Verificar ganhos
   for (const [symbol, count] of Object.entries(symbolCount)) {
     if (count >= 3) {
       if (symbol === '⚡') {
@@ -134,6 +137,6 @@ function closeChallenge() {
   document.getElementById('challenge-modal').style.display = 'none';
 }
 
-createGrid();
+createGrid();  // Cria a grade quando o jogo começa
 updateBalance();
 updateBet();
