@@ -1,19 +1,16 @@
-/* script.js */
 const symbols = ['🔵', '🟢', '🟡', '🟣', '🔴', '💎', '⚡'];
-const gridSize = 3;  // Menor grade para mais foco na jogabilidade
+const gridSize = 3;
 let balance = 100.00;
 let freeSpins = 0;
 let betAmount = 10;
 let multiplier = 1;
-const freeSpinCost = 100;  // Rodadas grátis custam 100x o valor da aposta
+const freeSpinCost = 100;
 let dailyChallenge = { task: "Gire 10 vezes hoje", completed: 0, reward: "R$50,00" };
 let gameHistory = [];
 
 function createGrid() {
   const grid = document.getElementById('slot-grid');
-  grid.innerHTML = ''; // Limpa a grade anterior
-
-  // Criar células da grade
+  grid.innerHTML = '';
   for (let i = 0; i < gridSize * gridSize; i++) {
     const cell = document.createElement('div');
     cell.classList.add('slot-cell');
@@ -21,33 +18,35 @@ function createGrid() {
   }
 }
 
-function updateBalance() {
+function updateUI() {
   document.getElementById('balance').textContent = `Saldo: R$${balance.toFixed(2)}`;
+  document.getElementById('bet-value').textContent = `Aposta: R$${betAmount},00`;
+  document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
 }
 
-function updateBet() {
-  document.getElementById('bet-value').textContent = `Aposta: R$${betAmount},00`;
+function applyMultiplier() {
+  multiplier = Math.floor(Math.random() * 3) + 1;
+  alert(`Multiplicador de aposta: ${multiplier}x`);
 }
 
 function spin() {
   const cells = document.querySelectorAll('.slot-cell');
   const results = [];
 
-  // Preencher a grade com símbolos aleatórios
   cells.forEach((cell, index) => {
     cell.classList.add('fall');
     setTimeout(() => {
       const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-      cell.textContent = randomSymbol;  // Define o símbolo no slot
+      cell.textContent = randomSymbol;
       results.push(randomSymbol);
       cell.classList.remove('fall');
-    }, 500 * index);  // Fazer a animação com atraso
+    }, 200 * index);
   });
 
   setTimeout(() => {
-    checkWin(results);  // Verifica os ganhos após a animação
+    checkWin(results);
     checkDailyChallenge();
-  }, 1000);  // Aguarda 1 segundo para a animação terminar
+  }, 1000);
 }
 
 function checkWin(results) {
@@ -57,51 +56,54 @@ function checkWin(results) {
   });
 
   let winAmount = 0;
-
-  // Verificar ganhos
   for (const [symbol, count] of Object.entries(symbolCount)) {
-    if (count >= 3 && Math.random() > 0.2) {  // Dificuldade de ganho (50% de chance)
+    if (count >= 3) {
       if (symbol === '⚡') {
-        freeSpins += 1;
-        document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
-        alert('Rodadas Grátis Ativadas!');
+        freeSpins++;
+        alert('Você ganhou uma rodada grátis!');
       } else {
-        winAmount += count * 10 * multiplier;
+        winAmount += count * betAmount * multiplier;
       }
     }
   }
 
   if (winAmount > 0) {
     balance += winAmount;
-    alert(`Você ganhou R$${winAmount.toFixed(2)}!`);
     gameHistory.push({ type: 'ganho', amount: winAmount });
+    alert(`Você ganhou R$${winAmount.toFixed(2)}!`);
   } else {
     balance -= betAmount;
     gameHistory.push({ type: 'perda', amount: betAmount });
   }
 
-  updateBalance();
-}
-
-function applyMultiplier() {
-  multiplier = Math.floor(Math.random() * 3) + 1;  // Aplica um multiplicador aleatório
-  alert(`Multiplicador de aposta: ${multiplier}x`);
+  updateUI();
 }
 
 function spinFreeRounds() {
   for (let i = 0; i < 10; i++) {
-    setTimeout(() => {
-      spin();
-    }, 1500 * i); // Gira 10 vezes seguidas com intervalo
+    setTimeout(spin, 1500 * i);
   }
 }
 
+function checkDailyChallenge() {
+  dailyChallenge.completed++;
+  if (dailyChallenge.completed >= 10) {
+    alert(`Desafio diário concluído! Você ganhou ${dailyChallenge.reward}`);
+    balance += 50;
+    updateUI();
+  }
+}
+
+function closeChallenge() {
+  document.getElementById('challenge-modal').style.display = 'none';
+}
+
+// Eventos
 document.getElementById('spin-btn').addEventListener('click', () => {
   if (balance >= betAmount || freeSpins > 0) {
     if (freeSpins > 0) {
-      freeSpins -= 1;
-      document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
-      spinFreeRounds();  // Gira automaticamente 10 vezes
+      freeSpins--;
+      spinFreeRounds();
     } else {
       applyMultiplier();
       balance -= betAmount;
@@ -113,19 +115,19 @@ document.getElementById('spin-btn').addEventListener('click', () => {
 });
 
 document.getElementById('bet-amount').addEventListener('input', (e) => {
-  betAmount = parseInt(e.target.value);
-  updateBet();
+  betAmount = parseInt(e.target.value) || 10;
+  updateUI();
 });
 
 document.getElementById('buy-free-spins').addEventListener('click', () => {
-  if (balance >= freeSpinCost * betAmount) {  // 100x a aposta
-    freeSpins += 1;
-    balance -= freeSpinCost * betAmount;  // Custa 100x a aposta
-    updateBalance();
-    document.getElementById('free-spins').textContent = `Rodadas Grátis: ${freeSpins}`;
+  const cost = freeSpinCost * betAmount;
+  if (balance >= cost) {
+    freeSpins++;
+    balance -= cost;
     alert('Você comprou uma rodada grátis!');
+    updateUI();
   } else {
-    alert('Saldo insuficiente para comprar rodadas grátis!');
+    alert('Saldo insuficiente para rodadas grátis!');
   }
 });
 
@@ -133,19 +135,6 @@ document.getElementById('payout-table-btn').addEventListener('click', () => {
   document.getElementById('payout-table').style.display = 'block';
 });
 
-function checkDailyChallenge() {
-  dailyChallenge.completed++;
-  if (dailyChallenge.completed >= 10) {
-    alert(`Desafio concluído! Você ganhou ${dailyChallenge.reward}`);
-    balance += 50;
-    updateBalance();
-  }
-}
-
-function closeChallenge() {
-  document.getElementById('challenge-modal').style.display = 'none';
-}
-
-createGrid();  // Cria a grade quando o jogo começa
-updateBalance();
-updateBet();
+// Inicialização
+createGrid();
+updateUI();
