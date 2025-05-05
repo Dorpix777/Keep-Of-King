@@ -2,51 +2,40 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gates of Olympus - Jogo de Slot</title>
+  <title>Keep of King - Slot Machine</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="game-container">
-    <div id="slot-grid"></div>
-    <div id="controls">
+  <div class="container">
+    <h1>Keep of King - Cassino</h1>
+
+    <div class="info-panel">
+      <div id="balance">Saldo: R$100,00</div>
+      <div id="bet-value">Aposta: R$10,00</div>
+      <div id="free-spins">Rodadas Grátis: 0</div>
+    </div>
+
+    <div class="controls">
+      <label for="bet-amount">Alterar aposta:</label>
+      <input id="bet-amount" type="number" min="1" value="10">
       <button id="spin-btn">Girar</button>
-      <p id="balance">Saldo: R$100,00</p>
-      
-      <label for="bet-amount">Valor da Aposta (R$):</label>
-      <input type="range" id="bet-amount" min="5" max="50" value="10" step="5">
-      <p id="bet-value">Aposta: R$10,00</p>
-      
-      <label for="buy-free-spins">Comprar Rodadas Grátis (R$25,00 cada):</label>
-      <button id="buy-free-spins">Comprar 1 rodada grátis</button>
-      
-      <p id="free-spins">Rodadas Grátis: 0</p>
-      
-      <button id="payout-table-btn">Tabela de Pagamento</button>
+      <button id="buy-free-spins">Comprar Rodada Grátis</button>
+      <button id="payout-table-btn">Ver Pagamentos</button>
+    </div>
+
+    <div id="slot-grid" class="grid"></div>
+
+    <div id="payout-table" class="modal">
+      <h2>Tabela de Pagamentos</h2>
+      <ul>
+        <li>3 símbolos iguais = ganha aposta × símbolo × multiplicador</li>
+        <li>⚡ = +1 rodada grátis</li>
+        <li>Multiplicador aleatório entre 1x e 3x por rodada</li>
+      </ul>
+      <button onclick="document.getElementById('payout-table').style.display='none'">Fechar</button>
     </div>
   </div>
-  
-  <div id="payout-table" style="display: none;">
-    <h3>Tabela de Pagamento</h3>
-    <table>
-      <tr><th>Ícone</th><th>Prêmio</th></tr>
-      <tr><td>🔵</td><td>R$10</td></tr>
-      <tr><td>🟢</td><td>R$15</td></tr>
-      <tr><td>🟡</td><td>R$20</td></tr>
-      <tr><td>🟣</td><td>R$25</td></tr>
-      <tr><td>🔴</td><td>R$30</td></tr>
-      <tr><td>💎</td><td>R$50</td></tr>
-      <tr><td>⚡</td><td>Rodadas Grátis</td></tr>
-    </table>
-    <button onclick="document.getElementById('payout-table').style.display = 'none'">Fechar</button>
-  </div>
 
-  <div id="challenge-modal" style="display:none;">
-    <h3>Desafio Diário</h3>
-    <p id="challenge-text"></p>
-    <button onclick="closeChallenge()">Fechar</button>
-  </div>
-  
   <script src="script.js"></script>
 </body>
 </html>
